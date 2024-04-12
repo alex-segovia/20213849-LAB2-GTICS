@@ -16,6 +16,17 @@
     .tablero *{
       border: white thin solid;
     }
+    .fondoBomba{
+      background-color: purple;
+    }
+
+    .fondoCobre{
+      background-color: #58a258;
+      color: blue;
+      text-align: center;
+      font-weight: bold;
+      font-size: 150%;
+    }
   </style>
 </head>
 <body>
@@ -25,51 +36,17 @@
     <form method="post" th:action="@{'/minar'}" class="d-flex justify-content-start">
       <label class="col-sm-3 col-form-label">Coordenada a explotar de la mina:</label>
       <input style="width: 8%" type="text" name="coordenada" class="form-control col-sm-1">
+      <input style="width: 8%" type="text" name="posiciones" th:value="${posiciones}" class="form-control col-sm-1" hidden="hidden">
       <button class="btn btn-primary col-sm-1 ms-5">Explotar</button>
     </form>
   </div>
   <div class="tablero mt-5">
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
+    <div th:each="casilla,info:${tablero[0]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:'fondoBomba'"></div>
+    <div th:each="casilla,info:${tablero[1]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:'fondoBomba'"></div>
+    <div th:each="casilla,info:${tablero[2]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:'fondoBomba'"></div>
+    <div th:each="casilla,info:${tablero[3]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:'fondoBomba'"></div>
+    <div th:each="casilla,info:${tablero[4]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:'fondoBomba'"></div>
+    <div th:each="casilla,info:${tablero[5]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:'fondoBomba'"></div>
   </div>
 </div>
 </body>
