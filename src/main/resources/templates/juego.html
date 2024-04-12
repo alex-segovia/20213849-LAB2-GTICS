@@ -41,12 +41,12 @@
     </form>
   </div>
   <div class="tablero mt-5">
-    <div th:each="casilla,info:${tablero[0]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:'fondoBomba'"></div>
-    <div th:each="casilla,info:${tablero[1]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:'fondoBomba'"></div>
-    <div th:each="casilla,info:${tablero[2]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:'fondoBomba'"></div>
-    <div th:each="casilla,info:${tablero[3]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:'fondoBomba'"></div>
-    <div th:each="casilla,info:${tablero[4]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:'fondoBomba'"></div>
-    <div th:each="casilla,info:${tablero[5]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:'fondoBomba'"></div>
+    <div th:each="casilla,info:${tablero[0]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:''"></div>
+    <div th:each="casilla,info:${tablero[1]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:''"></div>
+    <div th:each="casilla,info:${tablero[2]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:''"></div>
+    <div th:each="casilla,info:${tablero[3]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:''"></div>
+    <div th:each="casilla,info:${tablero[4]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:''"></div>
+    <div th:each="casilla,info:${tablero[5]}" th:class="${casilla>=0}?'fondoCobre':'fondoBomba'" th:text="${casilla>0}?${casilla}:''"></div>
   </div>
 </div>
 </body>
