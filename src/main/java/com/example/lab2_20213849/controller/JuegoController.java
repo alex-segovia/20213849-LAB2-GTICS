@@ -11,10 +11,13 @@ import java.util.ArrayList;
 @Controller
 public class JuegoController {
     private int intentos;
-    private int intentosTotales;
+    private int cantBombas;
+    private int cantMinasDescubiertas;
     private int[][] tablero;
     private int cantidadFilas;
     private int cantidadColumnas;
+    private int casillaActual;
+    private int estadoJuego;
     @GetMapping(value = "/buscaminas")
     public String buscaminas(){
         return "buscaminas";
@@ -29,9 +32,11 @@ public class JuegoController {
                         @RequestParam(name = "bombas")String cantidadBombas){
         tablero = new int[Integer.parseInt(fila)][Integer.parseInt(columna)];
         intentos = Integer.parseInt(cantidadIntentos);
-        intentosTotales = Integer.parseInt(cantidadIntentos);
         cantidadFilas=Integer.parseInt(fila);
         cantidadColumnas=Integer.parseInt(columna);
+        cantBombas=Integer.parseInt(cantidadBombas);
+        cantMinasDescubiertas=0;
+        estadoJuego=0;
         ArrayList<ArrayList<Integer>> posicionesBombas = new ArrayList<>();
 
         for(int i=0;i<Integer.parseInt(cantidadBombas);i++){
@@ -45,6 +50,7 @@ public class JuegoController {
         model.addAttribute("tablero",tablero);
         model.addAttribute("filas",cantidadFilas);
         model.addAttribute("columnas",cantidadColumnas);
+        model.addAttribute("estadoJuego",estadoJuego);
         return "juego";
     }
 
@@ -55,9 +61,23 @@ public class JuegoController {
         model.addAttribute("filas",cantidadFilas);
         model.addAttribute("columnas",cantidadColumnas);
         String mensaje = "";
+
+        if(casillaActual==0){
+            mensaje = "";
+        }else{
+            mensaje = "Encontró una bomba, le queda(n) " + intentos + " intento(s) !";
+        }
+
         if(intentos==0){
             mensaje="Usted ha perdido el juego !";
+            estadoJuego=1;
         }
+
+        if(cantidadColumnas*cantidadFilas-cantBombas == cantMinasDescubiertas){
+            mensaje="Usted ha ganado el juego !";
+            estadoJuego=1;
+        }
+        model.addAttribute("estadoJuego",estadoJuego);
         model.addAttribute("mensaje",mensaje);
         return "juego";
     }
@@ -72,8 +92,12 @@ public class JuegoController {
                     }
                     if(tablero[i][j]==-1){
                         intentos -= 1;
+                        casillaActual = -1;
+                    }else{
+                        casillaActual = 0;
                     }
                     tablero[i][j] += 100;
+                    cantMinasDescubiertas += 1;
                     if(tablero[i][j]==100){
                         if(j-1>=0){
                             if(tablero[i][j-1]<99){

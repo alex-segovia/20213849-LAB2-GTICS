@@ -35,10 +35,13 @@
 <div class="container mt-5 mb-5">
   <h4 class="mb-5">Encuentre todo el cobre para ganar el juego</h4>
   <div class="row">
-    <form method="post" th:action="@{'/minar'}" class="d-flex justify-content-start">
+    <form method="post" th:if="${estadoJuego==0}" th:action="@{'/minar'}" class="d-flex justify-content-start">
       <label class="col-sm-3 col-form-label">Coordenada a explotar de la mina:</label>
       <input style="width: 8%" type="text" name="coordenada" class="form-control col-sm-1">
       <button class="btn btn-primary col-sm-1 ms-5">Explotar</button>
+    </form>
+    <form method="get" th:if="${estadoJuego==1}" th:action="@{'/buscaminas'}" class="d-flex justify-content-start">
+      <button class="btn btn-primary col-sm-1">Regresar</button>
     </form>
   </div>
   <div class="tablero mt-5" th:style="'width: '+${columnas}*50+'px; height: '+${filas}*50+'px'">
@@ -46,6 +49,7 @@
       <span style="width: 50px; display: flex; justify-content: center; align-items: center" th:each="casilla,info:${fila}" th:class="${casilla>=100}?'fondoCobre':''" th:classappend="${casilla==99}?'fondoBomba':''" th:text="${casilla>100}?${casilla}-100:''"></span>
     </div>
   </div>
+  <h5 th:text="${mensaje}" class="mt-5"></h5>
 </div>
 </body>
 </html>
