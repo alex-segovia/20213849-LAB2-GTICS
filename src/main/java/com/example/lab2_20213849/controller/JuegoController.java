@@ -10,115 +10,110 @@ import java.util.ArrayList;
 
 @Controller
 public class JuegoController {
-
+    private int intentos;
+    private int[][] tablero;
+    private int cantidadFilas;
+    private int cantidadColumnas;
     @GetMapping(value = "/buscaminas")
     public String buscaminas(){
         return "buscaminas";
     }
 
     @PostMapping(value = "/jugar")
-    public String juego(Model model, @RequestParam(name = "posiciones") String posiciones){
-        model.addAttribute("posiciones",posiciones);
-        ArrayList<Integer> posicion1 = new ArrayList<>();
-        ArrayList<Integer> posicion2 = new ArrayList<>();
-        ArrayList<Integer> posicion3 = new ArrayList<>();
-        ArrayList<Integer> posicion4 = new ArrayList<>();
-        ArrayList<Integer> posicion5 = new ArrayList<>();
+    public String juego(Model model,
+                        @RequestParam(name = "posiciones") String posiciones,
+                        @RequestParam(name = "filas")String fila,
+                        @RequestParam(name = "columnas")String columna,
+                        @RequestParam(name = "intentos")String cantidadIntentos,
+                        @RequestParam(name = "bombas")String cantidadBombas){
+        tablero = new int[Integer.parseInt(fila)][Integer.parseInt(columna)];
+        intentos = Integer.parseInt(cantidadIntentos);
+        cantidadFilas=Integer.parseInt(fila);
+        cantidadColumnas=Integer.parseInt(columna);
+        ArrayList<ArrayList<Integer>> posicionesBombas = new ArrayList<>();
 
-        int p1 = Integer.parseInt(posiciones.split(" ")[0].split(",")[0].split("\\(")[1]);
-        int p2 = Integer.parseInt(posiciones.split(" ")[0].split(",")[1].split("\\)")[0]);
-        posicion1.add(p1-1);
-        posicion1.add(p2-1);
+        for(int i=0;i<Integer.parseInt(cantidadBombas);i++){
+            ArrayList<Integer> posicion = new ArrayList<>();
+            posicion.add(Integer.parseInt(posiciones.split(" ")[i].split(",")[0].split("\\(")[1])-1);
+            posicion.add(Integer.parseInt(posiciones.split(" ")[i].split(",")[1].split("\\)")[0])-1);
+            posicionesBombas.add(posicion);
+        }
 
-        int p3 = Integer.parseInt(posiciones.split(" ")[1].split(",")[0].split("\\(")[1]);
-        int p4 = Integer.parseInt(posiciones.split(" ")[1].split(",")[1].split("\\)")[0]);
-        posicion2.add(p3-1);
-        posicion2.add(p4-1);
-
-        int p5 = Integer.parseInt(posiciones.split(" ")[2].split(",")[0].split("\\(")[1]);
-        int p6 = Integer.parseInt(posiciones.split(" ")[2].split(",")[1].split("\\)")[0]);
-        posicion3.add(p5-1);
-        posicion3.add(p6-1);
-
-        int p7 = Integer.parseInt(posiciones.split(" ")[3].split(",")[0].split("\\(")[1]);
-        int p8 = Integer.parseInt(posiciones.split(" ")[3].split(",")[1].split("\\)")[0]);
-        posicion4.add(p7-1);
-        posicion4.add(p8-1);
-
-        int p9 = Integer.parseInt(posiciones.split(" ")[4].split(",")[0].split("\\(")[1]);
-        int p10 = Integer.parseInt(posiciones.split(" ")[4].split(",")[1].split("\\)")[0]);
-        posicion5.add(p9-1);
-        posicion5.add(p10-1);
-
-        int[][] tableroJuego = generarTablero(posicion1,posicion2,posicion3,posicion4,posicion5);
-
-        model.addAttribute("tablero",tableroJuego);
+        generarTablero(posicionesBombas);
+        model.addAttribute("tablero",tablero);
+        model.addAttribute("filas",cantidadFilas);
+        model.addAttribute("columnas",cantidadColumnas);
         return "juego";
     }
 
     @PostMapping(value = "/minar")
-    public String minar(@RequestParam(name = "tablero")int[][] tablero, @RequestParam(name = "posiciones") String posiciones, @RequestParam(name = "coordenada") String coordenada){
-        explotar(tablero,Integer.parseInt(coordenada.split(" ")[0])-1,Integer.parseInt(coordenada.split(" ")[1])-1);
-        return "forward:/jugar";
+    public String minar(Model model, @RequestParam(name = "coordenada") String coordenada){
+        explotar(Integer.parseInt(coordenada.split(" ")[0])-1,Integer.parseInt(coordenada.split(" ")[1])-1);
+        model.addAttribute("tablero",tablero);
+        return "juego";
     }
 
-    public void explotar(int[][] tablero, int coordenada1, int coordenada2){
+    public void explotar(int coordenada1, int coordenada2){
         for(int i=0;i<6;i++) {
             for (int j = 0; j < 6; j++) {
                 if(i==coordenada1 && j == coordenada2){
+                    if(tablero[i][j]>=100){
+                        continue;
+                    }
                     tablero[i][j] += 100;
                 }
             }
         }
     }
 
-    public int[][] generarTablero(ArrayList<Integer> posicion1,ArrayList<Integer> posicion2,ArrayList<Integer> posicion3,ArrayList<Integer> posicion4,ArrayList<Integer> posicion5){
-        int[][] tablero = new int[6][6];
-
-        int fila1 = posicion1.get(0);
-        int columna1 = posicion1.get(1);
-        int fila2 = posicion2.get(0);
-        int columna2 = posicion2.get(1);
-        int fila3 = posicion3.get(0);
-        int columna3 = posicion3.get(1);
-        int fila4 = posicion4.get(0);
-        int columna4 = posicion4.get(1);
-        int fila5 = posicion5.get(0);
-        int columna5 = posicion5.get(1);
-
-        for(int i=0; i<6; i++){
-            for(int j=0; j<6; j++){
-                if((fila1==i && columna1==j) || (fila2==i && columna2==j) || (fila3==i && columna3==j) || (fila4==i && columna4==j) || (fila5==i && columna5==j)){
-                    tablero[i][j] = -1;
-                }else{
-                    tablero[i][j] = 0;
+    public void generarTablero(ArrayList<ArrayList<Integer>> posicionesBombas){
+        for(int i=0; i<cantidadFilas; i++){
+            for(int j=0; j<cantidadColumnas; j++){
+                int valorBomba = 0;
+                for(ArrayList<Integer> coordenadas: posicionesBombas){
+                    if(coordenadas.get(0)==i && coordenadas.get(1)==j){
+                        valorBomba = -1;
+                        break;
+                    }
                 }
+                tablero[i][j] = valorBomba;
             }
         }
 
-        int [][] tablero2 = new int[6][6];
+        int [][] tablero2 = new int[cantidadFilas][cantidadColumnas];
 
-        for(int i=0;i<6;i++){
-            for (int j=0;j<6;j++){
-                if((fila1==i && columna1==j) || (fila2==i && columna2==j) || (fila3==i && columna3==j) || (fila4==i && columna4==j) || (fila5==i && columna5==j)){
-                    continue;
+        for(int i=0;i<cantidadFilas;i++){
+            bucle:
+            for (int j=0;j<cantidadColumnas;j++){
+                for(ArrayList<Integer> coordenadas: posicionesBombas){
+                    if(coordenadas.get(0)==i && coordenadas.get(1)==j){
+                        continue bucle;
+                    }
                 }
                 int cantidad = 0;
                 if(j-1>=0){
                     cantidad += tablero[i][j-1];
                     if(i-1>=0){
-                        cantidad += tablero[i-1][j-1] + tablero[i-1][j];
+                        cantidad += tablero[i-1][j-1];
                     }
-                    if(i+1<=5){
-                        cantidad += tablero[i+1][j-1] + tablero[i+1][j];
+                    if(i+1<=cantidadFilas-1){
+                        cantidad += tablero[i+1][j-1];
                     }
                 }
-                if(j+1<=5){
+
+                if(i-1>=0){
+                    cantidad += tablero[i-1][j];
+                }
+                if(i+1<=cantidadFilas-1){
+                    cantidad += tablero[i+1][j];
+                }
+
+                if(j+1<=cantidadColumnas-1){
                     cantidad += tablero[i][j+1];
                     if(i-1>=0){
                         cantidad += tablero[i-1][j+1];
                     }
-                    if(i+1<=5){
+                    if(i+1<=cantidadFilas-1){
                         cantidad += tablero[i+1][j+1];
                     }
                 }
@@ -126,11 +121,10 @@ public class JuegoController {
             }
         }
 
-        for(int i=0;i<6;i++){
-            for (int j=0;j<6;j++) {
+        for(int i=0;i<cantidadFilas;i++){
+            for (int j=0;j<cantidadColumnas;j++) {
                 tablero[i][j] += tablero2[i][j];
             }
         }
-        return tablero;
     }
 }
