@@ -11,6 +11,7 @@ import java.util.ArrayList;
 @Controller
 public class JuegoController {
     private int intentos;
+    private int intentosTotales;
     private int[][] tablero;
     private int cantidadFilas;
     private int cantidadColumnas;
@@ -28,6 +29,7 @@ public class JuegoController {
                         @RequestParam(name = "bombas")String cantidadBombas){
         tablero = new int[Integer.parseInt(fila)][Integer.parseInt(columna)];
         intentos = Integer.parseInt(cantidadIntentos);
+        intentosTotales = Integer.parseInt(cantidadIntentos);
         cantidadFilas=Integer.parseInt(fila);
         cantidadColumnas=Integer.parseInt(columna);
         ArrayList<ArrayList<Integer>> posicionesBombas = new ArrayList<>();
@@ -50,17 +52,71 @@ public class JuegoController {
     public String minar(Model model, @RequestParam(name = "coordenada") String coordenada){
         explotar(Integer.parseInt(coordenada.split(" ")[0])-1,Integer.parseInt(coordenada.split(" ")[1])-1);
         model.addAttribute("tablero",tablero);
+        model.addAttribute("filas",cantidadFilas);
+        model.addAttribute("columnas",cantidadColumnas);
+        String mensaje = "";
+        if(intentos==0){
+            mensaje="Usted ha perdido el juego !";
+        }
+        model.addAttribute("mensaje",mensaje);
         return "juego";
     }
 
     public void explotar(int coordenada1, int coordenada2){
-        for(int i=0;i<6;i++) {
-            for (int j = 0; j < 6; j++) {
+        buclePrincipal:
+        for(int i=0;i<cantidadFilas;i++) {
+            for (int j = 0; j < cantidadColumnas; j++) {
                 if(i==coordenada1 && j == coordenada2){
-                    if(tablero[i][j]>=100){
-                        continue;
+                    if(tablero[i][j]>=99){
+                        break buclePrincipal;
+                    }
+                    if(tablero[i][j]==-1){
+                        intentos -= 1;
                     }
                     tablero[i][j] += 100;
+                    if(tablero[i][j]==100){
+                        if(j-1>=0){
+                            if(tablero[i][j-1]<99){
+                                explotar(i,j-1);
+                            }
+                            if(i-1>=0){
+                                if(tablero[i-1][j-1]<99){
+                                    explotar(i-1,j-1);
+                                }
+                            }
+                            if(i+1<=cantidadFilas-1){
+                                if(tablero[i+1][j-1]<99){
+                                    explotar(i+1,j-1);
+                                }
+                            }
+                        }
+                        if(i-1>=0){
+                            if(tablero[i-1][j]<99){
+                                explotar(i-1,j);
+                            }
+                        }
+                        if(i+1<=cantidadFilas-1){
+                            if(tablero[i+1][j]<99){
+                                explotar(i+1,j);
+                            }
+                        }
+                        if(j+1<=cantidadColumnas-1){
+                            if(tablero[i][j+1]<99){
+                                explotar(i,j+1);
+                            }
+                            if(i-1>=0){
+                                if(tablero[i-1][j+1]<99){
+                                    explotar(i-1,j+1);
+                                }
+                            }
+                            if(i+1<=cantidadFilas-1){
+                                if(tablero[i+1][j+1]<99){
+                                    explotar(i+1,j+1);
+                                }
+                            }
+                        }
+                    }
+                    break buclePrincipal;
                 }
             }
         }
