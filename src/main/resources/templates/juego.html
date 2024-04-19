@@ -43,7 +43,7 @@
   </div>
   <div class="tablero mt-5" th:style="'width: '+${columnas}*50+'px; height: '+${filas}*50+'px'">
     <div style="height: 50px; display: flex" th:each="fila,info:${tablero}">
-      <span style="width: 50px" th:each="casilla,info:${fila}" th:class="${casilla>=100}?'fondoCobre':''" th:classappend="${casilla==99}?'fondoBomba':''" th:text="${casilla>100}?${casilla}-100:''"></span>
+      <span style="width: 50px; display: flex; justify-content: center; align-items: center" th:each="casilla,info:${fila}" th:class="${casilla>=100}?'fondoCobre':''" th:classappend="${casilla==99}?'fondoBomba':''" th:text="${casilla>100}?${casilla}-100:''"></span>
     </div>
   </div>
 </div>
